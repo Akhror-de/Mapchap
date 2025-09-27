@@ -1,0 +1,818 @@
+:root {
+    /* Цветовые переменные Telegram WebApp (по умолчанию светлая тема) */
+    --tg-theme-bg-color: var(--background-color, #ffffff);
+    --tg-theme-text-color: var(--text-color, #000000);
+    --tg-theme-hint-color: var(--hint-color, #707579);
+    --tg-theme-link-color: var(--link-color, #2481cc);
+    --tg-theme-button-color: var(--button-color, #2481cc);
+    --tg-theme-button-text-color: var(--button-text-color, #ffffff);
+    --tg-theme-header-bg-color: var(--header-bg-color, #ffffff);
+    --tg-theme-secondary-bg-color: var(--secondary-background-color, #f4f4f5);
+    --tg-theme-link-color-rgb: 36, 129, 204; /* RGB для #2481cc */
+
+    /* Дополнительные переменные для тёмной темы, используемые в приложении */
+    --dark-bg-color: #1a1a1a;
+    --dark-text-color: #e0e0e0;
+    --dark-secondary-bg-color: #2a2a2a;
+    --dark-border-color: #444444;
+    --dark-button-hover-color: #3a3a3a;
+
+    /* Переходы для плавности анимаций */
+    --transition-speed: 0.3s ease-in-out;
+}
+
+/* Применение тёмной темы Telegram, если она активна, переопределяя переменные */
+body.dark-mode {
+    --tg-theme-bg-color: var(--background-color, #212121);
+    --tg-theme-text-color: var(--text-color, #ffffff);
+    --tg-theme-hint-color: var(--hint-color, #aaaaaa);
+    --tg-theme-link-color: var(--link-color, #81c784);
+    --tg-theme-button-color: var(--button-color, #66bb6a);
+    --tg-theme-button-text-color: var(--button-text-color, #212121);
+    --tg-theme-header-bg-color: var(--header-bg-color, #212121);
+    --tg-theme-secondary-bg-color: var(--secondary-background-color, #303030);
+    --tg-theme-link-color-rgb: 129, 199, 132; /* RGB для #81c784 */
+}
+
+/* Базовые стили для всего приложения: шрифт, фон, цвет текста, плавные переходы */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif; /* Или другой современный шрифт */
+    background-color: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Контейнер всего приложения, занимает всю высоту и предотвращает горизонтальный скролл */
+#app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%; /* Убедимся, что не выходит за пределы */
+    overflow-x: hidden; /* Предотвращаем горизонтальный скролл */
+}
+
+/* Шапка приложения, содержит заголовок и имеет тень для отделения от контента */
+.app-header {
+    background-color: var(--tg-theme-header-bg-color);
+    color: var(--tg-theme-text-color);
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* Основная область контента, где динамически отображаются экраны */
+.app-content {
+    flex-grow: 1;
+    padding: 15px;
+    display: flex; /* Для управления видимостью экранов */
+    flex-direction: column;
+    position: relative;
+}
+
+/* Базовые стили для каждого экрана приложения (скрыты по умолчанию) */
+.app-screen {
+    width: 100%;
+    flex-shrink: 0;
+    display: none;
+    opacity: 0;
+    transition: opacity var(--transition-speed); /* Плавное появление/исчезновение */
+    box-sizing: border-box;
+}
+
+/* Стиль для активного (видимого) экрана */
+.app-screen.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Заголовки каждого экрана */
+.app-screen h2 {
+    color: var(--tg-theme-text-color);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+/* Контейнер для Яндекс.Карты, с фиксированной высотой и стилизацией */
+/* Фон для карты установлен в темный цвет для соответствия общему стилю */
+#map-container {
+    width: 100%;
+    height: 300px; /* Фиксированная высота для демонстрации */
+    background-color: var(--dark-secondary-bg-color); /* Фон для карты */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative; /* Для позиционирования элементов карты */
+}
+
+/* Панель поиска и фильтров на главном экране карты */
+.search-filter-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: var(--tg-theme-secondary-bg-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Поле ввода для поиска */
+#search-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid var(--tg-theme-hint-color);
+    border-radius: 5px;
+    background-color: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    transition: border-color var(--transition-speed);
+}
+
+/* Стиль поля ввода в фокусе */
+#search-input:focus {
+    border-color: var(--tg-theme-link-color);
+    outline: none;
+}
+
+/* Контейнер для кнопок фильтров */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Кнопки фильтров */
+.filter-button {
+    flex-grow: 1; /* Кнопки будут занимать доступное пространство */
+    background-color: var(--tg-theme-secondary-bg-color);
+    color: var(--tg-theme-text-color);
+    border: 1px solid var(--tg-theme-hint-color);
+    padding: 8px 12px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+
+/* Стиль активной кнопки фильтра */
+.filter-button.active {
+    background-color: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+    border-color: var(--tg-theme-button-color);
+}
+
+/* Эффект при наведении на кнопку фильтра (неактивную) */
+.filter-button:hover:not(.active) {
+    background-color: var(--tg-theme-hint-color);
+    color: var(--tg-theme-bg-color);
+}
+
+/* Стили для формы регистрации предпринимателей */
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background-color: var(--tg-theme-secondary-bg-color);
+    border-radius: 8px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--tg-theme-text-color);
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid var(--tg-theme-hint-color);
+    border-radius: 5px;
+    background-color: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    transition: border-color var(--transition-speed);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+    border-color: var(--tg-theme-link-color);
+    outline: none;
+}
+
+/* Стили для отображения информации профиля предпринимателя */
+.profile-info {
+    background-color: var(--tg-theme-secondary-bg-color);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.profile-info p {
+    margin-bottom: 10px;
+    color: var(--tg-theme-text-color);
+}
+
+.profile-info strong {
+    color: var(--tg-theme-text-color);
+}
+
+/* Контейнер для кнопок действий на экране профиля предпринимателя */
+.business-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Список заведений, добавленных предпринимателем */
+.establishment-list {
+    margin-top: 20px;
+    border-top: 1px solid var(--tg-theme-hint-color);
+    padding-top: 15px;
+}
+
+.establishment-list h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--tg-theme-text-color);
+}
+
+/* Общие стили для форм добавления/редактирования заведений и редактирования профиля */
+.establishment-form,
+.edit-profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background-color: var(--tg-theme-secondary-bg-color);
+    border-radius: 8px;
+}
+
+/* Группа полей в форме */
+.form-group {
+    margin-bottom: 10px;
+}
+
+/* Метки полей формы */
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--tg-theme-text-color);
+    font-weight: bold;
+}
+
+/* Общие стили для полей ввода, текстовых областей и выпадающих списков */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea,
+.form-group select {
+    width: calc(100% - 22px); /* Учитываем padding и border */
+    padding: 10px;
+    border: 1px solid var(--tg-theme-hint-color);
+    border-radius: 5px;
+    background-color: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    transition: border-color var(--transition-speed);
+    box-sizing: border-box; /* Важно для корректной ширины */
+}
+
+/* Стиль полей ввода в фокусе */
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--tg-theme-link-color);
+    outline: none;
+}
+
+/* Текстовые области с возможностью изменения размера */
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Стили для маленьких кнопок внутри форм (например, "Получить текущие координаты", "Выбрать на карте") */
+.form-group .telegram-button.small-button {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    margin-top: 5px;
+    align-self: flex-start;
+    margin-right: 10px; /* Отступ между кнопками */
+}
+
+/* Стили для отображения статуса проверки ИНН */
+.verification-status-message {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+    display: none; /* Скрыто по умолчанию */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.verification-status-message.success {
+    background-color: #e6ffe6; /* Светло-зеленый фон */
+    color: #008000; /* Темно-зеленый текст */
+    border: 1px solid #008000;
+}
+
+.verification-status-message.warning {
+    background-color: #fffacd; /* Светло-желтый фон */
+    color: #ffa500; /* Оранжевый текст */
+    border: 1px solid #ffa500;
+}
+
+.verification-status-message.error {
+    background-color: #ffe6e6; /* Светло-красный фон */
+    color: #cc0000; /* Темно-красный текст */
+    border: 1px solid #cc0000;
+}
+
+/* Стили для отображения данных компании/ИП из ФНС */
+.fns-company-data-display {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: var(--tg-theme-bg-color);
+    border-radius: 8px;
+    border: 1px solid var(--tg-theme-secondary-bg-color);
+    display: none; /* Скрыто по умолчанию */
+    flex-direction: column;
+    gap: 5px;
+}
+
+.fns-company-data-display p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.fns-company-data-display strong {
+    color: var(--tg-theme-text-color);
+}
+
+/* Контейнер для предпросмотра фотографий/логотипов */
+.photo-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.photo-preview-container img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--tg-theme-hint-color);
+}
+
+/* Стили для модального окна выбора местоположения на карте */
+#location-picker-modal .large-modal-content {
+    max-width: 600px; /* Увеличиваем ширину для карты для лучшего отображения */
+}
+
+/* Контейнер для карты внутри модального окна выбора местоположения */
+#picker-map-container {
+    width: 100%;
+    height: 300px;
+    background-color: var(--dark-secondary-bg-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+/* Стиль для отображения выбранных координат */
+#selected-coords {
+    color: var(--tg-theme-text-color);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 15px;
+}
+
+/* Стили для экрана входа в бизнес режим */
+#business-mode-entry-screen {
+    text-align: center;
+    padding: 20px;
+}
+
+#business-mode-entry-screen p {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+#business-mode-entry-screen .telegram-button {
+    margin-bottom: 10px;
+}
+
+/* Общие стили для всех модальных окон */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed; /* Поверх всего, фиксировано относительно области просмотра */
+    z-index: 2000; /* Высокий z-index, чтобы быть над картой и другими элементами */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Включить прокрутку, если содержимое слишком большое */
+    background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+    backdrop-filter: blur(5px); /* Эффект размытия фона */
+    -webkit-backdrop-filter: blur(5px);
+    transition: opacity var(--transition-speed); /* Плавное появление */
+}
+
+/* Стиль активного (видимого) модального окна */
+.modal.active {
+    display: flex; /* Используем flex для центрирования содержимого */
+    align-items: center; /* Выравнивание по вертикали */
+    justify-content: center; /* Выравнивание по горизонтали */
+}
+
+/* Содержимое модального окна: фон, отступы, тени, анимация появления */
+.modal-content {
+    background-color: var(--tg-theme-bg-color);
+    margin: auto; /* Центрирование */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: slideIn 0.3s ease-out; /* Анимация появления */
+    max-height: 90vh; /* Ограничение высоты и прокрутка при необходимости */
+    overflow-y: auto;
+}
+
+/* Анимация появления модального окна (сдвиг снизу и появление) */
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Кнопка закрытия модального окна ("крестик") */
+.close-button {
+    color: var(--tg-theme-hint-color);
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+/* Эффекты при наведении/фокусе на кнопку закрытия */
+.close-button:hover,
+.close-button:focus {
+    color: var(--tg-theme-text-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Контейнер для фотографий внутри модального окна заведения (горизонтальный скролл) */
+.modal-photos {
+    display: flex;
+    overflow-x: auto; /* Горизонтальная прокрутка */
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 5px; /* Для скроллбара */
+    -webkit-overflow-scrolling: touch; /* Улучшенная прокрутка на iOS */
+}
+
+.modal-photos img {
+    width: 150px;
+    height: 100px;
+    object-fit: cover; /* Обрезка изображения для заполнения */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для раздела отзывов в модальном окне заведения */
+.modal-reviews {
+    margin-top: 20px;
+    border-top: 1px solid var(--tg-theme-secondary-bg-color);
+    padding-top: 15px;
+}
+
+.modal-reviews h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--tg-theme-text-color);
+}
+
+.modal-reviews p {
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.modal-reviews .review-author {
+    font-weight: bold;
+    color: var(--tg-theme-link-color);
+}
+
+.modal-reviews .review-rating {
+    font-size: 0.8em;
+    color: var(--tg-theme-hint-color);
+}
+
+/* Стили для кнопок внутри модального окна */
+.modal-content .telegram-button {
+    margin-top: 15px;
+}
+
+.modal-content .telegram-button.secondary-button {
+    background-color: var(--tg-theme-secondary-bg-color);
+    color: var(--tg-theme-text-color);
+    border: 1px solid var(--tg-theme-hint-color);
+}
+
+.modal-content .telegram-button.secondary-button:hover {
+    background-color: var(--tg-theme-hint-color);
+}
+
+/* Отступы между несколькими кнопками в модальном окне */
+.modal-content .telegram-button + .telegram-button {
+    margin-top: 10px; /* Отступ между двумя кнопками */
+}
+
+.modal-content .telegram-button:last-child:not(:first-child) {
+    margin-top: 10px;
+}
+
+/* Общие стили для всех кнопок Telegram WebApp */
+.telegram-button {
+    background-color: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.1s ease-out;
+    width: 100%;
+    box-sizing: border-box; /* Учитываем padding и border в общей ширине */
+}
+
+/* Эффект наведения на кнопки */
+.telegram-button:hover {
+    background-color: var(--dark-button-hover-color); /* Немного темнее для ховера */
+}
+
+/* Эффект активного нажатия на кнопки */
+.telegram-button:active {
+    transform: scale(0.98);
+}
+
+/* Стиль для отключенных кнопок */
+.telegram-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Нижняя навигационная панель */
+.bottom-navigation {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--tg-theme-header-bg-color);
+    padding: 10px 0;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky; /* Прилипает к низу экрана */
+    bottom: 0;
+    width: 100%;
+    z-index: 1000; /* Поверх другого контента */
+    transition: background-color var(--transition-speed);
+}
+
+.nav-button {
+    flex: 1; /* Кнопки занимают равное пространство */
+    background: none;
+    border: none;
+    color: var(--tg-theme-hint-color);
+    padding: 10px 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: color var(--transition-speed);
+}
+
+/* Стиль активной навигационной кнопки */
+.nav-button.active {
+    color: var(--tg-theme-link-color);
+    font-weight: bold;
+}
+
+/* Эффект наведения на неактивные навигационные кнопки */
+.nav-button:hover:not(.active) {
+    color: var(--tg-theme-text-color);
+}
+
+/* Адаптивный дизайн для больших экранов */
+@media (min-width: 768px) {
+    #app-container {
+        max-width: 800px;
+        margin: 0 auto; /* Центрирование контейнера */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-content {
+        padding: 20px;
+    }
+}
+
+/* Стили для тёмной темы Яндекс.Карт (пример использования CSS фильтров) */
+/* Это лишь пример затемнения контейнера. Для реальной тёмной темы карты 
+   может потребоваться использование кастомных тайлов или JS-настройка, 
+   если Yandex Maps API это поддерживает. Этот фильтр может сделать карту темной,
+   но может повлиять на читаемость текста и изображений на карте. */
+#map-container .ymaps-2-1-79-map {
+    filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(150%);
+}
+
+/* Стили для сетки выбора категорий */
+.category-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    background-color: var(--tg-theme-secondary-bg-color);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.category-item:hover {
+    background-color: var(--tg-theme-hint-color);
+}
+
+.category-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.category-item label {
+    color: var(--tg-theme-text-color);
+    font-weight: normal;
+    cursor: pointer;
+}
+
+/* Стили для элементов избранных заведений */
+.favorite-establishment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--tg-theme-secondary-bg-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-establishment-item .name {
+    font-weight: bold;
+    color: var(--tg-theme-text-color);
+    flex-grow: 1;
+}
+
+.favorite-establishment-item .category {
+    font-size: 0.9em;
+    color: var(--tg-theme-hint-color);  
+    margin-left: 10px;
+}
+
+.favorite-establishment-item .telegram-button {
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+/* Стили для выделения избранных заведений на карте */
+/* Применяется к меткам, которые являются избранными (определяется в JS) */
+#map-container .ymaps-2-1-79-placemark-overlay[data-is-favorite="true"] .ymaps-2-1-79-placemark-mark {
+    /* Можно добавить более яркий цвет, анимацию, границу */
+    border: 2px solid var(--tg-theme-link-color);
+    box-shadow: 0 0 8px rgba(var(--tg-theme-link-color-rgb), 0.7);
+}
+
+/* Закомментированные стили для динамического применения переменных Telegram WebApp (реализовано в JS) */
+/* document.documentElement.style.setProperty('--background-color', Telegram.WebApp.themeParams.bg_color); */
+/* document.documentElement.style.setProperty('--text-color', Telegram.WebApp.themeParams.text_color); */
+
+/* Стили для основных категорий */
+.main-category-item {
+    background-color: var(--tg-theme-secondary-bg-color);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.main-category-item h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--tg-theme-text-color);
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Стили для сетки подкатегорий */
+.subcategory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+/* Стили для переключателя (toggle switch) */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--tg-theme-hint-color);
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--tg-theme-button-color);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--tg-theme-button-color);
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.notification-toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#notification-status-message {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--tg-theme-hint-color);
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
