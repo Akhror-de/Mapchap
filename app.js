@@ -20,7 +20,7 @@
 // Позволяет инициализировать приложение, получать параметры темы,
 // управлять кнопками (MainButton, BackButton) и показывать уведомления.
 // ========================================================
-import { renderCategorySelection } from './src/utils/categoryRenderer.js';
+// import { renderCategorySelection } from './src/utils/categoryRenderer.js';
 
 const TelegramWebApp = (() => {
     let WebApp = window.Telegram && window.Telegram.WebApp; // Объект Telegram WebApp SDK

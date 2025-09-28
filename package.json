@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Telegram Mini App 'MapCost' with Vercel Serverless Functions",
   "main": "api/index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "vercel dev --yes --confirm"
+    "dev": "vercel dev --yes --confirm",
+    "build": "echo 'Build completed'"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
