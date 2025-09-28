@@ -17,7 +17,7 @@
     "lru-cache": "^10.2.0"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "author": "Your Name",
   "license": "MIT"
