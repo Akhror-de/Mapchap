@@ -289,6 +289,24 @@
         </div>
     </div>
 
+    <!-- Дополнительный контейнер интерфейса и главная карта -->
+    <div class="container">
+        <header class="header">
+            <h1>🌍 MapCost</h1>
+            <p>Карта стоимости в вашем городе</p>
+        </header>
+
+        <!-- ГЛАВНАЯ КАРТА -->
+        <div id="map" style="width: 100%; height: 400px;"></div>
+
+        <!-- КНОПКИ УПРАВЛЕНИЯ -->
+        <div class="controls">
+            <button id="nearby-btn" class="btn">📍 Рядом со мной</button>
+            <button id="categories-btn" class="btn">📂 Категории</button>
+            <button id="business-btn" class="btn">💼 Для бизнеса</button>
+        </div>
+    </div>
+
     <!-- Модальное окно для выбора местоположения на карте (используется в формах регистрации/редактирования) -->
     <div id="location-picker-modal" class="modal">
         <div class="modal-content large-modal-content">
@@ -304,23 +322,23 @@
 
     <!-- Подключение основного файла логики приложения -->
     <script src="app.js"></script>
+    <!-- Модальное окно для настроек уведомлений -->
+    <div id="notification-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-notification-settings">&times;</span>
+            <h3>Настройки Уведомлений</h3>
+            <p>Получайте push-уведомления о важных событиях и акциях от MapCost.</p>
+            <div class="form-group notification-toggle-group">
+                <label for="notification-toggle">Включить уведомления:</label>
+                <label class="switch">
+                    <input type="checkbox" id="notification-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <p id="notification-status-message"></p>
+            <button type="button" class="telegram-button secondary-button" id="close-notification-settings-button">Закрыть</button>
+        </div>
+    </div>
+
 </body>
 </html>
-
-<!-- Модальное окно для настроек уведомлений -->
-<div id="notification-settings-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-button" id="close-notification-settings">&times;</span>
-        <h3>Настройки Уведомлений</h3>
-        <p>Получайте push-уведомления о важных событиях и акциях от MapCost.</p>
-        <div class="form-group notification-toggle-group">
-            <label for="notification-toggle">Включить уведомления:</label>
-            <label class="switch">
-                <input type="checkbox" id="notification-toggle">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <p id="notification-status-message"></p>
-        <button type="button" class="telegram-button secondary-button" id="close-notification-settings-button">Закрыть</button>
-    </div>
-</div>
