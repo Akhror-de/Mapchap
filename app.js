@@ -333,13 +333,23 @@ const MapSystem = (() => {
      * Добавляет элементы управления, ObjectManager для меток и обработчики событий.
      */
     const initMap = () => {
-        if (typeof ymaps === 'undefined') {
-            console.error("Яндекс.Карты API не загружен.");
-            return;
-        }
+        const tryInit = (attempt = 1) => {
+            if (typeof window.ymaps === 'undefined') {
+                if (attempt <= 10) {
+                    setTimeout(() => tryInit(attempt + 1), 300);
+                } else {
+                    console.error("Яндекс.Карты API не загрузился.");
+                    const container = document.getElementById('map') || document.getElementById('map-container');
+                    if (container) {
+                        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#cc0000;font-weight:bold;">Не удалось загрузить карту. Проверьте подключение и API‑ключ.</div>';
+                    }
+                }
+                return;
+            }
 
-        ymaps.ready(() => {
-            myMap = new ymaps.Map("map-container", {
+            ymaps.ready(() => {
+            const containerId = document.getElementById('map') ? 'map' : 'map-container';
+            myMap = new ymaps.Map(containerId, {
                 center: [55.76, 37.64], // Начальный центр карты (Москва)
                 zoom: 10, // Начальный уровень зума
                 controls: ['zoomControl', 'fullscreenControl', 'geolocationControl'] // Элементы управления на карте
@@ -386,6 +396,9 @@ const MapSystem = (() => {
 
             console.log("Yandex Map initialized.");
         });
+        };
+
+        tryInit();
     };
 
     /**
@@ -2080,11 +2093,25 @@ document.addEventListener('DOMContentLoaded', () => {
     Navigation.setupEventListeners(); // Настройка всех обработчиков событий
     NotificationSystem.init(); // Инициализация системы уведомлений
 
+    // Привязка новых кнопок управления
+    const nearbyBtn = document.getElementById('nearby-btn');
+    if (nearbyBtn) {
+        nearbyBtn.addEventListener('click', () => MapSystem.getUserGeolocation());
+    }
+    const categoriesBtn = document.getElementById('categories-btn');
+    if (categoriesBtn) {
+        categoriesBtn.addEventListener('click', () => Navigation.goToScreen('favorite-categories-screen'));
+    }
+    const businessBtn = document.getElementById('business-btn');
+    if (businessBtn) {
+        businessBtn.addEventListener('click', () => Navigation.goToScreen('business-mode-entry-screen'));
+    }
+
     // Активируем экран карты по умолчанию при загрузке приложения
     Navigation.goToScreen('main-map-screen');
 
     // Пример: при изменении темы Telegram обновляем карту (если необходимо)
-    TelegramWebApp.getWebApp().onEvent('themeChanged', () => {
+    TelegramWebApp.get极WebApp().onEvent('themeChanged', () => {
         if (window.myMap) {
             // Здесь можно добавить логику для переключения стилей карты
             // или перерисовки элементов, если они зависят от темы.
