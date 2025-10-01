@@ -220,6 +220,7 @@ const MapSystem = (() => {
     let myMap = null; // Экземпляр карты Яндекс.Карт
     let objectManager = null; // ObjectManager для управления метками и кластерами
     let userGeolocationPlacemark = null; // Метка текущего местоположения пользователя
+    let clickPlacemark = null; // Метка, добавляемая пользователем по клику на основной карте
     let establishmentsData = []; // Все загруженные заведения (моковые или с сервера)
     // Объект, хранящий текущие фильтры (категория, поисковый запрос)
     let currentFilters = { category: 'all', search: '' };
@@ -333,13 +334,24 @@ const MapSystem = (() => {
      * Добавляет элементы управления, ObjectManager для меток и обработчики событий.
      */
     const initMap = () => {
-        if (typeof ymaps === 'undefined') {
-            console.error("Яндекс.Карты API не загружен.");
-            return;
-        }
+        const tryInit = (attempt = 1) => {
+            if (typeof window.ymaps === 'undefined') {
+                if (attempt <= 10) {
+                    // Ждём загрузку скрипта Яндекс.Карт и пробуем снова
+                    setTimeout(() => tryInit(attempt + 1), 300);
+                } else {
+                    console.error("Яндекс.Карты API не загрузился.");
+                    const container = document.getElementById('map-container');
+                    if (container) {
+                        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#cc0000;font-weight:bold;">Не удалось загрузить карту. Проверьте подключение и API‑ключ.</div>';
+                    }
+                }
+                return;
+            }
 
-        ymaps.ready(() => {
-            myMap = new ymaps.Map("map-container", {
+            window.ymaps.ready(() => {
+            const containerId = document.getElementById('map') ? 'map' : 'map-container';
+            myMap = new ymaps.Map(containerId, {
                 center: [55.76, 37.64], // Начальный центр карты (Москва)
                 zoom: 10, // Начальный уровень зума
                 controls: ['zoomControl', 'fullscreenControl', 'geolocationControl'] // Элементы управления на карте
@@ -378,6 +390,21 @@ const MapSystem = (() => {
                 }
             });
 
+            // Добавление/перемещение пользовательской метки по клику на карте
+            myMap.events.add('click', (e) => {
+                const coords = e.get('coords');
+                if (!clickPlacemark) {
+                    clickPlacemark = new ymaps.Placemark(coords, { hintContent: 'Выбранная точка' }, { draggable: true });
+                    myMap.geoObjects.add(clickPlacemark);
+                } else {
+                    clickPlacemark.geometry.setCoordinates(coords);
+                }
+                const coordsInput = document.getElementById('est-coords');
+                if (coordsInput) {
+                    coordsInput.value = coords.map(v => v.toFixed(6)).join(', ');
+                }
+            });
+
             // Обработчик изменения области просмотра карты (для динамической подгрузки данных, если необходимо)
             myMap.events.add('boundschange', (e) => {
                 // console.log("Map bounds changed:", e.get('newBounds'));
@@ -386,6 +413,9 @@ const MapSystem = (() => {
 
             console.log("Yandex Map initialized.");
         });
+        };
+
+        tryInit();
     };
 
     /**
@@ -1204,7 +1234,7 @@ const LocationPickerModal = (() => {
         pickerMap = new ymaps.Map(pickerMapContainer, {
             center: initialCoords || [55.76, 37.64], // Дефолтный центр Москвы или переданные координаты
             zoom: 12, // Уровень зума
-            controls: ['zoomControl', 'fullscreenControl'] // Элементы управления
+            controls: ['zoomControl', 'geolocationControl'] // Элементы управления
         });
 
         // Создаем перетаскиваемую метку
@@ -1243,7 +1273,13 @@ const LocationPickerModal = (() => {
         confirmCallback = callback; // Сохраняем callback-функцию
         modal.classList.add('active'); // Показываем модальное окно
         TelegramWebApp.getWebApp().BackButton.show(); // Показываем кнопку "Назад" Telegram
-        ymaps.ready(() => initPickerMap(currentCoords)); // Инициализируем карту после открытия модального окна
+        if (typeof ymaps === 'undefined') {
+            // Подстрахуемся, если API ещё не подгружен
+            const wait = () => (typeof ymaps === 'undefined') ? setTimeout(wait, 200) : ymaps.ready(() => initPickerMap(currentCoords));
+            wait();
+        } else {
+            ymaps.ready(() => initPickerMap(currentCoords)); // Инициализируем карту после открытия модального окна
+        }
     };
 
     /**
@@ -1504,8 +1540,10 @@ const Navigation = (() => {
         // Обработчики для навигационных кнопок в нижней панели
         navButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                const targetScreenId = e.target.dataset.targetScreen; // Получаем ID целевого экрана из data-атрибута
-                goToScreen(targetScreenId); // Переключаемся на выбранный экран
+                const targetScreenId = e.currentTarget.dataset.targetScreen; // Получаем ID целевого экрана из data-атрибута
+                if (targetScreenId) {
+                    goToScreen(targetScreenId); // Переключаемся на выбранный экран
+                }
             });
         });
 
@@ -1527,8 +1565,9 @@ const Navigation = (() => {
             button.addEventListener('click', (e) => {
                 // Снимаем активное состояние со всех кнопок фильтров
                 document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active'); // Устанавливаем активное состояние на текущую кнопку
-                const category = e.target.dataset.category; // Получаем категорию из data-атрибута
+                const current = e.currentTarget;
+                current.classList.add('active'); // Устанавливаем активное состояние на текущую кнопку
+                const category = current.dataset.category; // Получаем категорию из data-атрибута
                 MapSystem.updateFilters({ category: category }); // Обновляем фильтры карты
             });
         });
