@@ -322,5 +322,50 @@
         </div>
     </div>
 
-</body>
+</body><!-- ДЕБАГ ПАНЕЛЬ - покажет все ошибки на экране -->
+<div style="position: fixed; top: 0; left: 0; right: 0; background: #ff4444; color: white; padding: 10px; z-index: 10000; font-size: 14px;">
+    <strong>Debug Panel</strong>
+    <div id="debug-info">Загрузка...</div>
+</div>
+
+<script>
+// Автоматическая проверка всех компонентов
+function checkAll() {
+    const debug = document.getElementById('debug-info');
+    const checks = [];
+    
+    // Проверка 1: Яндекс.Карты
+    if (typeof ymaps === 'undefined') {
+        checks.push('❌ Яндекс.Карты не загружены');
+    } else {
+        checks.push('✅ Яндекс.Карты загружены');
+    }
+    
+    // Проверка 2: Контейнер карты
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) {
+        checks.push('❌ Контейнер #map не найден');
+    } else {
+        const rect = mapContainer.getBoundingClientRect();
+        checks.push(`✅ Контейнер: ${rect.width}x${rect.height}px`);
+    }
+    
+    // Проверка 3: app.js
+    try {
+        if (typeof initMap === 'function') {
+            checks.push('✅ app.js загружен');
+        } else {
+            checks.push('❌ app.js не загружен или ошибка');
+        }
+    } catch (e) {
+        checks.push('❌ Ошибка в app.js');
+    }
+    
+    debug.innerHTML = checks.join(' | ');
+}
+
+// Запускаем проверку
+setTimeout(checkAll, 1000);
+setTimeout(checkAll, 3000);
+</script>
 </html>
