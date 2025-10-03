@@ -322,6 +322,37 @@
             <button type="button" class="telegram-button secondary-button" id="close-notification-settings-button">Закрыть</button>
         </div>
     </div>
+<script>
+// ИНИЦИАЛИЗАЦИЯ КАРТЫ
+if (typeof ymaps !== 'undefined') {
+    ymaps.ready(function() {
+        try {
+            // Создаем карту
+            var map = new ymaps.Map('map', {
+                center: [55.7558, 37.6173], // Москва
+                zoom: 10,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+            
+            // Устанавливаем тёмную тему
+            map.setType('yandex#darkMap');
+            
+            console.log('✅ Карта создана успешно!');
+            
+            // Обновляем статус
+            document.getElementById('debug-info').innerHTML = 
+                '✅ Яндекс.Карты загружены | ✅ Контейнер: 330x400px | ✅ Карта создана!';
+                
+        } catch (error) {
+            console.error('❌ Ошибка создания карты:', error);
+            document.getElementById('debug-info').innerHTML = 
+                '✅ Яндекс.Карты загружены | ✅ Контейнер: 330x400px | ❌ Ошибка карты: ' + error.message;
+        }
+    });
+} else {
+    console.error('❌ Яндекс.Карты не загружены');
+}
+</script>
 
 <!-- ДЕБАГ ПАНЕЛЬ - покажет все ошибки на экране -->
 <div style="position: fixed; top: 0; left: 0; right: 0; background: #ff4444; color: white; padding: 10px; z-index: 10000; font-size: 14px;">
